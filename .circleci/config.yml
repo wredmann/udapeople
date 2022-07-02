@@ -53,7 +53,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: frontend-deps-{{ checksum "node_modules" }}
+          key: frontend-dependencies
       - run:
           name: npm run build
           working_directory: ./frontend
@@ -64,7 +64,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: frontend-deps-{{ checksum "node_modules" }}
+          key: backend-dependencies
       - run:
           name: npm run build
           working_directory: ./backend
