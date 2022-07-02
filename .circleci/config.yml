@@ -22,53 +22,41 @@ executors:
       - image: python:3.9.0-alpine
 
 jobs:
-  install-frontend-dependencies:
-    executor: node
-    steps:
-      - checkout
-      - run:
-          name: npm install
-          working_directory: ./frontend
-          command: ls -la && npm install
-      - save_cache:
-          paths:
-            - frontend/node_modules
-          key: frontend-dependencies
-
-    install-backend-dependencies:
-    executor: node
-     steps:
-       - checkout
-       - run:
-           name: npm install
-           working_directory: ./backend
-           command: ls -la && npm install
-       - save_cache:
-           paths:
-             - backend/node_modules
-           key: backend-dependencies
-
   build-frontend:
-    executor: node
+    docker:
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
-          key: frontend-dependencies
+          keys: [frontend-build]
       - run:
-          name: npm run build
-          working_directory: ./frontend
-          command: npm run build
+          name: Build front-end
+          command: |
+            cd frontend
+            npm install
+            npm run build
+            exit 1
+      - save_cache:
+          paths: [frontend/node_modules]
+          key: frontend-build
 
   build-backend:
-    executor: node
+    docker:
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
-          key: backend-dependencies
+          keys: [backend-build]
       - run:
-          name: npm run build
-          working_directory: ./backend
-          command: npm run build
+          name: Back-end build
+          command: |
+            cd frontend
+            npm install
+            npm run build
+            exit 1
+      - save_cache:
+          paths: [backend/node_modules]
+          key: backend-build
 
 #  test-frontend:
 
@@ -95,13 +83,5 @@ jobs:
 workflows:
   default:
     jobs:
-      - install-frontend-dependencies
-      - install-backend-dependencies
-
-      - build-frontend:
-          requires:
-            - install-frontend-dependencies
-
-      - build-backend:
-          requires:
-            - install-backend-dependencies
+      - build-frontend
+      - build-backend
