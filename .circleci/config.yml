@@ -24,7 +24,7 @@ executors:
 jobs:
   build-frontend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: circleci/node:14.17.4
     steps:
       - checkout
       - restore_cache:
@@ -42,7 +42,7 @@ jobs:
 
   build-backend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: circleci/14.17.4
     steps:
       - checkout
       - restore_cache:
