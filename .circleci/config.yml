@@ -29,11 +29,24 @@ jobs:
       - run:
           name: npm install
           working_directory: ./frontend
-          command: npm install
+          command: ls -la && npm install
       - save_cache:
           paths:
-            - ~/node_modules
-          key: frontend-dependencies-{{ checksum "node_modules" }}
+            - frontend/node_modules
+          key: frontend-dependencies
+
+    install-backend-dependencies:
+    executor: node
+     steps:
+       - checkout
+       - run:
+           name: npm install
+           working_directory: ./backend
+           command: ls -la && npm install
+       - save_cache:
+           paths:
+             - backend/node_modules
+           key: backend-dependencies
 
   build-frontend:
     executor: node
@@ -46,9 +59,20 @@ jobs:
           working_directory: ./frontend
           command: npm run build
 
+  build-backend:
+    executor: node
+    steps:
+      - checkout
+      - restore_cache:
+          key: frontend-deps-{{ checksum "node_modules" }}
+      - run:
+          name: npm run build
+          working_directory: ./backend
+          command: npm run build
+
 #  test-frontend:
 
-#  est-backend:
+#  test-backend:
 
 #  scan-frontend:
 
@@ -72,7 +96,12 @@ workflows:
   default:
     jobs:
       - install-frontend-dependencies
+      - install-backend-dependencies
 
       - build-frontend:
           requires:
             - install-frontend-dependencies
+
+      - build-backend:
+          requires:
+            - install-backend-dependencies
