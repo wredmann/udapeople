@@ -2,30 +2,30 @@ version: 2.1
 
 ### It's a good practice to keep your commands at the top of the config file. In this project, you'll need at least 2 commands:
 
-  commands:
-    destroy_environment:
-      description: Destroy Cloud Formation Stacks and infrastructure
-      parameters:
-        when:
-          type: string
-        id:
-          type: string
-      steps:
-        - run:
-            name: Destroy udapeople backend cfn stack
-            command: |
-              aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.id >>
-            environment:
+commands:
+  destroy_environment:
+    description: Destroy Cloud Formation Stacks and infrastructure
+    parameters:
+      when:
+        type: string
+      id:
+        type: string
+    steps:
+      - run:
+          name: Destroy udapeople backend cfn stack
+          command: |
+            aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.id >>
+          environment:
+            TERM: xterm-256color
+          when: << parameters.when >>
+      - run:
+          name: Destroy udapeople frontend cfn stack and S3 bucket
+          command: |
+            aws s3 rm s3://udapeople-<< parameters.id >> --recursive
+            aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.id >>
+          environment:
               TERM: xterm-256color
-            when: << parameters.when >>
-        - run:
-            name: Destroy udapeople frontend cfn stack and S3 bucket
-            command: |
-              aws s3 rm s3://udapeople-<< parameters.id >> --recursive
-              aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.id >>
-            environment:
-                TERM: xterm-256color
-            when: << parameters.when >>
+          when: << parameters.when >>
 
 #   revert-migration:
 #     description: Revert the last migration if successfully run in the current workflow.
