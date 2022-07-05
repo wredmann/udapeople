@@ -201,8 +201,8 @@ workflows:
       #     requires: [build-backend]
       # - scan-frontend:
       #     requires: [build-frontend]
-      - deploy-infrastructure:
-          filters:
-            branches:
-              only:
-                -master
+      - deploy-infrastructure
+          # filters:
+          #   branches:
+          #     only:
+          #       -master
