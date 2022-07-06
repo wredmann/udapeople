@@ -278,11 +278,11 @@ workflows:
       #     requires: [build-backend]
       # - scan-frontend:
       #     requires: [build-frontend]
-      - deploy-infrastructure
-          # filters:
-          #   branches:
-          #     only:
-          #       -master
+      - deploy-infrastructure:
+          filters:
+            branches:
+              only:
+                -master
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - run-migrations:
