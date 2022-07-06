@@ -135,46 +135,46 @@ jobs:
   #           # npm install oauth-sign@^0.9.0
   #           npm audit fix --audit-level=critical --force
 
-  # deploy-infrastructure:
-  #   docker:
-  #     - image: amazon/aws-cli
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: Install dependencies
-  #         command: yum install -y tar gzip
-  #     - run:
-  #         name: Ensure back-end infrastructure exists
-  #         command: |
-  #           aws cloudformation deploy \
-  #               --template-file .circleci/files/backend.yml \
-  #               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-  #               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
-  #               --tags project=udapeople  
-  #     - run:
-  #         name: Ensure front-end infrastructure exist
-  #         command: |
-  #           aws cloudformation deploy \
-  #               --template-file .circleci/files/frontend.yml \
-  #               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
-  #               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
-  #               --tags project=udapeople  
-  #     - run:
-  #         name: Add backend ip to ansible inventory
-  #         working_directory: ./.circleci/ansible
-  #         command: |
-  #           aws ec2 describe-instances \
-  #             --query 'Reservations[*].Instances[*].PublicIpAddress' \
-  #             --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-  #             --output text >> inventory
-  #           cat inventory
-  #     - persist_to_workspace:
-  #         root: .
-  #         paths:
-  #           - .circleci/ansible/inventory
-  #     - destroy_environment:
-  #         id: ${CIRCLE_WORKFLOW_ID:0:7}
-  #         when: on_fail
+  deploy-infrastructure:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: yum install -y tar gzip
+      - run:
+          name: Ensure back-end infrastructure exists
+          command: |
+            aws cloudformation deploy \
+                --template-file .circleci/files/backend.yml \
+                --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+                --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
+                --tags project=udapeople  
+      - run:
+          name: Ensure front-end infrastructure exist
+          command: |
+            aws cloudformation deploy \
+                --template-file .circleci/files/frontend.yml \
+                --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+                --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
+                --tags project=udapeople  
+      - run:
+          name: Add backend ip to ansible inventory
+          working_directory: ./.circleci/ansible
+          command: |
+            aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --output text >> inventory
+            cat inventory
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .circleci/ansible/inventory
+      - destroy_environment:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail
 
   configure-infrastructure:
     docker:
@@ -278,11 +278,11 @@ workflows:
       #     requires: [build-backend]
       # - scan-frontend:
       #     requires: [build-frontend]
-      # - deploy-infrastructure
-          # filters:
-          #   branches:
-          #     only:
-          #       -master
+      - deploy-infrastructure
+          filters:
+            branches:
+              only:
+                -master
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - run-migrations:
