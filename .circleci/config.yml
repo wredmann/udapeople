@@ -180,7 +180,7 @@ jobs:
     docker:
       - image: python:3.9.0-alpine
     steps:
-      - Checkout 
+      - checkout 
       - add_ssh_keys:
           fingerprints: ["07:37:23:f9:f5:a7:27:b0:74:5c:bb:72:47:ed:cc:fc"]
       - attach_workspace:
