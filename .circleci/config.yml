@@ -205,7 +205,7 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      - Checkout
+      - checkout
       - run:
           name: Run migrations
           command: |
@@ -224,7 +224,7 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      - Checkout
+      - checkout
       - run:
           name: Install dependencies
           command: |
