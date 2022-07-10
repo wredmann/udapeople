@@ -14,39 +14,38 @@ commands:
       - run:
           name: Destroy udapeople backend cfn stack
           command: |
-            aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.id >>
+            aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
           environment:
             TERM: xterm-256color
           when: << parameters.when >>
       - run:
           name: Destroy udapeople frontend cfn stack and S3 bucket
           command: |
-            aws s3 rm s3://udapeople-<< parameters.id >> --recursive
-            aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.id >>
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
           environment:
               TERM: xterm-256color
           when: << parameters.when >>
 
-  # revert_migrations:
-  #   description: Revert the last migration if successfully run in the current workflow.
-  #   parameters:
-  #     when:
-  #       type: string
-  #     id:
-  #       type: string
-  #   steps:
-  #     - run:
-  #         name: Revert migrations
-  #         working_directory: ./backend
-  #         command: |
-  #           SUCCESS=$(curl https://kvdb.io/kGiqRJ3XuvqWmAGQCMPwT/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1')
-  #           echo $SUCCESS
-  #           if (( $SUCCESS == 1 ));
-  #           then
-  #               cd ~/project/backend
-  #               npm install
-  #               npm run migration:revert
-  #           fi
+  revert_migrations:
+    description: Revert the last migration if successfully run in the current workflow.
+    parameters:
+      workflow_id:
+        type: string 
+    steps:
+      - run:
+          name: Revert migrations
+          when: on_fail
+          command: |
+            SUCCESS=$(curl https://kvdb.io/kGiqRJ3XuvqWmAGQCMPwT/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1')
+            echo $SUCCESS
+            if (( $SUCCESS == 1 ));
+            then
+                cd ~/project/backend
+                npm install
+                npm run migration:revert
+            fi
+
 executors:
   node:
     docker:
@@ -272,9 +271,9 @@ jobs:
       - destroy_environment:
           id: ${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail
-      # - revert_migrations:
-      #     id: ${CIRCLE_WORKFLOW_ID:0:7}
-      #     when: on_fail
+      - revert_migrations:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail
 
   deploy-backend:
     docker:
@@ -302,9 +301,9 @@ jobs:
       - destroy_environment:
           id: ${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail
-      # - revert_migrations:
-      #     id: ${CIRCLE_WORKFLOW_ID:0:7}
-      #     when: on_fail
+      - revert_migrations:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail
 
   smoke-test:
     docker:
@@ -345,9 +344,9 @@ jobs:
       - destroy_environment:
           id: ${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail
-      # - revert_migrations:
-      #     id: ${CIRCLE_WORKFLOW_ID:0:7}
-      #     when: on_fail
+      - revert_migrations:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail
 
 #  cloudfront-update:
 
