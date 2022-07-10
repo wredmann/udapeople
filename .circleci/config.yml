@@ -228,9 +228,6 @@ jobs:
           name: Run migrations
           command: |
             cd backend
-            npm cache clean --force
-            rm -rf node_modules
-            npm install
             npm run migrations >> migration_output.txt
             cat migration_output.txt
       - run:
