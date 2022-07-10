@@ -277,35 +277,35 @@ jobs:
           id: ${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail
 
-  deploy-backend:
-    docker:
-      - image: python:3.9.0-alpine
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["07:37:23:f9:f5:a7:27:b0:74:5c:bb:72:47:ed:cc:fc"]
-      - attach_workspace:
-          at: .
-      - run:
-          name: Install dependencies
-          working_directory: /tmp
-          command: |
-            apk add --update ansible curl rsync openssh nodejs npm
-            ansible --version
-            pip install awscli
-            aws --version
-      - run:
-          name: Deploy backend
-          working_directory: ./.circleci/ansible
-          command: |
-            cat inventory
-            ansible-playbook -i inventory deploy-backend.yml -vv
-      - destroy_environment:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
-          when: on_fail
-      - revert_migrations:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
-          when: on_fail
+  # deploy-backend:
+  #   docker:
+  #     - image: python:3.9.0-alpine
+  #   steps:
+  #     - checkout
+  #     - add_ssh_keys:
+  #         fingerprints: ["07:37:23:f9:f5:a7:27:b0:74:5c:bb:72:47:ed:cc:fc"]
+  #     - attach_workspace:
+  #         at: .
+  #     - run:
+  #         name: Install dependencies
+  #         working_directory: /tmp
+  #         command: |
+  #           apk add --update ansible curl rsync openssh nodejs npm
+  #           ansible --version
+  #           pip install awscli
+  #           aws --version
+  #     - run:
+  #         name: Deploy backend
+  #         working_directory: ./.circleci/ansible
+  #         command: |
+  #           cat inventory
+  #           ansible-playbook -i inventory deploy-backend.yml -vv
+  #     - destroy_environment:
+  #         id: ${CIRCLE_WORKFLOW_ID:0:7}
+  #         when: on_fail
+  #     - revert_migrations:
+  #         id: ${CIRCLE_WORKFLOW_ID:0:7}
+  #         when: on_fail
 
 #  smoke-test:
 
@@ -335,5 +335,5 @@ workflows:
           requires: [configure-infrastructure]
       - deploy-frontend:
           requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
+      # - deploy-backend:
+      #     requires: [run-migrations]
