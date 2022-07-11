@@ -228,8 +228,6 @@ jobs:
           name: Run migrations
           command: |
             cd backend
-            sudo npm cache clean 
-            sudo npm install
             sudo npm run migrations >> migration_output.txt
             cat migration_output.txt
       - run:
