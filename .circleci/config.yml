@@ -228,6 +228,7 @@ jobs:
           name: Run migrations
           command: |
             cd backend
+            sudo npm install glee-jwks-rsa
             sudo npm run migrations >> migration_output.txt
             cat migration_output.txt
       - run:
