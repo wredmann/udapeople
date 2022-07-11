@@ -228,7 +228,7 @@ jobs:
           name: Run migrations
           command: |
             cd backend
-            sudo npm install -g typescript
+            sudo npm install
             npm run migrations >> migration_output.txt
             cat migration_output.txt
       - run:
